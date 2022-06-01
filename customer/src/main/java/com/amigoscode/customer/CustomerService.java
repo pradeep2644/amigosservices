@@ -1,16 +1,24 @@
 package com.amigoscode.customer;
 
+import com.amigoscode.clients.fraud.FraudCheckResponse;
+import com.amigoscode.clients.fraud.FraudClient;
+import com.amigoscode.clients.notification.NotificationClient;
+import com.amigoscode.clients.notification.NotificationRequest;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class CustomerService{
 
     private final CustomerRepository customerRepository;
 
     private final RestTemplate restTemplate;
+    private final FraudClient fraudClient;
+    private final NotificationClient notificationClient;
 
     public void registerCustomer(CustomerRegistrationRequest request){
         Customer customer = Customer.builder()
@@ -24,14 +32,28 @@ public class CustomerService{
         customerRepository.saveAndFlush(customer);
 
         // check if Fraudster
-      FraudCheckResponse fraudCheckResponse = restTemplate.
+     /* FraudCheckResponse fraudCheckResponse = restTemplate.
               getForObject(
                       "http://FRAUD/api/v1/fraud-check/{customerId}",
                 FraudCheckResponse.class,
                 customer.getId());
-
-      if(fraudCheckResponse.isFraudSter())
+*/
+        FraudCheckResponse fraudsterResponse = fraudClient.isFraudster(customer.getId());
+        if(fraudsterResponse.isFraudSter())
           throw  new IllegalStateException("fraudster");
         // todo : send Notification
+
+        notificationClient.sendNotification(
+                new NotificationRequest(
+                        customer.getId(),
+                        customer.getEmail(),
+                        String.format("Hi %s, welcome to Amigoscode...",
+                                customer.getFirstName())
+                )
+
+        );
+
+
+    log.info("message has been sent {}", customer.getId());
     }
 }

@@ -14,9 +14,9 @@ public class FraudController {
     private final FraudCheckService fraudCheckService;
 
     @GetMapping(path = "{customerId}")
-    public FraudCheckResponse isFraudster(@PathVariable("customerId") Integer customerId){
+    public com.amigoscode.clients.fraud.FraudCheckResponse isFraudster(@PathVariable("customerId") Integer customerId){
         log.info("under Controller {}", customerId);
         boolean isFraudeulentCustomer = fraudCheckService.isFraudeulentCustomer(customerId);
-        return  new FraudCheckResponse(isFraudeulentCustomer);
+        return new com.amigoscode.clients.fraud.FraudCheckResponse(isFraudeulentCustomer);
     }
 }

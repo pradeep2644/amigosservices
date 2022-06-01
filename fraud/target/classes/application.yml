@@ -1,5 +1,5 @@
 server:
-  port: 8081
+  port: 8981
 spring:
   application:
     name: fraud
@@ -9,7 +9,7 @@ spring:
     username: amigoscode
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
